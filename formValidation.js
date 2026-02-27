@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('adoptionForm');
+    if (!form) return;
 
     form.addEventListener('submit', function (e) {
         let isValid = true;
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Validate name
         const jmeno = document.getElementById('jmeno');
-        if (jmeno.value.trim() === '') {
+        if (jmeno && jmeno.value.trim() === '') {
             jmeno.closest('.input-group').classList.add('has-error');
             isValid = false;
         }
@@ -20,21 +21,23 @@ document.addEventListener('DOMContentLoaded', function () {
         // Validate email
         const email = document.getElementById('email');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email.value.trim())) {
+        if (email && !emailRegex.test(email.value.trim())) {
             email.closest('.input-group').classList.add('has-error');
             isValid = false;
         }
 
-        // Validate select
-        const druh = document.getElementById('druh');
-        if (druh.value === '') {
-            druh.closest('.input-group').classList.add('has-error');
-            isValid = false;
-        }
+        // Validate select (duvod or druh)
+        var selects = form.querySelectorAll('select[required]');
+        selects.forEach(function (sel) {
+            if (sel.value === '') {
+                sel.closest('.input-group').classList.add('has-error');
+                isValid = false;
+            }
+        });
 
         // Validate checkbox
         const souhlas = form.querySelector('input[name="souhlas"]');
-        if (!souhlas.checked) {
+        if (souhlas && !souhlas.checked) {
             souhlas.closest('.input-group').classList.add('has-error');
             isValid = false;
         }
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!isValid) {
             e.preventDefault();
             // Scroll to first error
-            const firstError = form.querySelector('.has-error');
+            var firstError = form.querySelector('.has-error');
             if (firstError) {
                 firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -50,16 +53,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Live removal of error state on input
-    const inputs = form.querySelectorAll('input, select, textarea');
+    var inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(function (input) {
         input.addEventListener('input', function () {
-            const group = this.closest('.input-group');
+            var group = this.closest('.input-group');
             if (group) {
                 group.classList.remove('has-error');
             }
         });
         input.addEventListener('change', function () {
-            const group = this.closest('.input-group');
+            var group = this.closest('.input-group');
             if (group) {
                 group.classList.remove('has-error');
             }
